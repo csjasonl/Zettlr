@@ -28,7 +28,7 @@
         v-bind:has-duplicate-name="getFiles.filter(i => i.name === item.name).length > 1"
       >
       </TreeItem>
-      <div v-show="getDirectories.length > 0" id="directories-dirs-header">
+      <div v-if="getDirectories.length > 0" id="directories-dirs-header">
         <clr-icon
           shape="tree-view"
           role="presentation"

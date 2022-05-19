@@ -17,7 +17,7 @@ import sortDirectories from '../source/win-main/file-manager/util/sort-directori
 import { deepStrictEqual } from 'assert'
 import { DirMeta } from '@dts/common/fsal'
 
-const sort = 'AlphaD'
+const sort = 'AlphaA'
 
 const sortDirectoriesTesters = [
   {
