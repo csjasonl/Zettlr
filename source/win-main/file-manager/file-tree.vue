@@ -10,7 +10,7 @@
     <template v-if="fileTree.length > 0">
       <div v-if="getFilteredTree.length === 0" class="empty-tree">
         <div class="info">
-          {{ noResultsMessage }}
+          {{ trans('gui.no_search_results') }}
         </div>
       </div>
 
@@ -18,7 +18,7 @@
         <clr-icon
           shape="file"
           role="presentation"
-        ></clr-icon>{{ fileSectionHeading }}
+        ></clr-icon>{{ trans('gui.files') }}
       </div>
       <TreeItem
         v-for="item in getFiles"
@@ -32,7 +32,15 @@
         <clr-icon
           shape="tree-view"
           role="presentation"
-        ></clr-icon>{{ workspaceSectionHeading }}
+        ></clr-icon>{{ trans('gui.workspaces') }}
+        <select id="sort-selection" v-model="sortSelection">
+          <option value="AlphaA">
+            {{ trans('gui.alphabetical_asc_option') }}
+          </option>
+          <option value="AlphaD">
+            {{ trans('gui.alphabetical_desc_option') }}
+          </option>
+        </select>
       </div>
       <TreeItem
         v-for="item in getDirectories"
@@ -47,7 +55,7 @@
     <template v-else>
       <div class="empty-tree" v-on:click="requestOpenRoot">
         <div class="info">
-          {{ noRootsMessage }}
+          {{ trans('gui.empty_directories') }}
         </div>
       </div>
     </template>
@@ -75,6 +83,7 @@ import matchQuery from './util/match-query'
 import matchTree from './util/match-tree'
 import { defineComponent } from 'vue'
 import { MDFileMeta, CodeFileMeta, DirMeta } from '@dts/common/fsal'
+import sortDirectories from './util/sort-directories'
 
 const ipcRenderer = window.ipc
 
@@ -94,7 +103,9 @@ export default defineComponent({
     }
   },
   data: function () {
-    return {}
+    return {
+      sortSelection: 'AlphaA'
+    }
   },
   computed: {
     fileTree: function (): Array<MDFileMeta|CodeFileMeta|DirMeta> {
@@ -136,22 +147,14 @@ export default defineComponent({
       return this.getFilteredTree.filter(item => item.type !== 'directory') as Array<MDFileMeta|CodeFileMeta>
     },
     getDirectories: function (): DirMeta[] {
-      return this.getFilteredTree.filter(item => item.type === 'directory') as DirMeta[]
-    },
-    fileSectionHeading: function (): string {
-      return trans('gui.files')
-    },
-    workspaceSectionHeading: function (): string {
-      return trans('gui.workspaces')
-    },
-    noRootsMessage: function (): string {
-      return trans('gui.empty_directories')
-    },
-    noResultsMessage: function () {
-      return trans('gui.no_search_results')
+      let directories = this.getFilteredTree.filter(item => item.type === 'directory') as DirMeta[]
+      return sortDirectories(directories, this.sortSelection) as DirMeta[]
     }
   },
   methods: {
+    trans: function (transString: String) {
+      return trans(transString)
+    },
     /**
      * Called whenever the user clicks on the "No open files or folders"
      * message -- it requests to open a new folder from the main process.
@@ -178,7 +181,7 @@ body {
     position: relative;
     width: 100%;
     height: 100%;
-    left: 0%;
+    left: 0;
     overflow-x: hidden;
     overflow-y: auto;
     outline: none;
@@ -216,6 +219,11 @@ body {
             font-weight: bold;
             font-size: 200%;
         }
+    }
+
+    #sort-selection {
+      margin: 5px 0;
+      display: block;
     }
   }
 }
