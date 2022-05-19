@@ -24,7 +24,7 @@ import { DirMeta } from '@dts/common/fsal'
  *
  * @return  {DirMeta[]}                  The sorted array
  */
-export default function sortDirectories (dirArray: DirMeta[], sortBy: string = 'AlphaD'): DirMeta[] {
+export default function sortDirectories (dirArray: DirMeta[], sortBy: string = 'AlphaA'): DirMeta[] {
   function compareByAlpha (a: DirMeta, b: DirMeta): number {
     // get names of directory in lowercase due to ASCII values
     let nameA = a.name.toLowerCase()
@@ -32,10 +32,16 @@ export default function sortDirectories (dirArray: DirMeta[], sortBy: string = '
     let compareResult = 0
     if (nameA === nameB) {
       // if directories have the same name, compare the names of the directory they are in
-      compareResult = a.dir < b.dir ? 1 : -1
+      if(a.dir > b.dir)
+        compareResult = 1
+      if(a.dir < b.dir)
+        compareResult = -1
     } else {
       // else compare regularly
-      compareResult = nameA < nameB ? 1 : 1
+      if(nameA > nameB)
+        compareResult = 1
+      if(nameA < nameB)
+        compareResult = -1
     }
     // return array in reverse alphabetical order if sortBy is AlphaD
     return compareResult * (sortBy === 'AlphaA' ? 1 : -1)
